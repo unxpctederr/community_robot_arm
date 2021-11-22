@@ -164,7 +164,8 @@ void Interpolation::updateActualPosition() {
   pos_tracker[Z_AXIS] = zStartmm + progress * zDelta;
   pos_tracker[E_AXIS] = eStartmm + progress * eDelta;
 
-  if(isAllowedPosition(pos_tracker)){
+  //if(isAllowedPosition(pos_tracker)){
+  if(true){
     xPosmm = pos_tracker[X_AXIS];
     yPosmm = pos_tracker[Y_AXIS];
     zPosmm = pos_tracker[Z_AXIS];
@@ -235,10 +236,10 @@ bool Interpolation::isAllowedPosition(float pos_tracker[4]) {
           && squaredPositionModule >= sq(R_MIN) 
           && pos_tracker[Z_AXIS] >= Z_MIN  
           && pos_tracker[Z_AXIS] <= Z_MAX 
-          #if RAIL
-          && pos_tracker[E_AXIS] <= RAIL_LENGTH
-          && pos_tracker[E_AXIS] >= 0
-          #endif
+          //#if RAIL
+          //&& pos_tracker[E_AXIS] <= RAIL_LENGTH
+          //&& pos_tracker[E_AXIS] >= 0
+          //#endif
       );
   if(!retVal) {
     Logger::logERROR("LIMIT REACHED: [X:" + String(pos_tracker[X_AXIS]) + " Y:" + String(pos_tracker[Y_AXIS]) + " Z:" + String(pos_tracker[Z_AXIS]) + " E:" + String(pos_tracker[E_AXIS]) + "]");

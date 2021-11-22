@@ -1,7 +1,8 @@
 #include <Arduino.h>
 #include "RampsStepper.h"
+#include "config.h"
 
-RampsStepper::RampsStepper(int aStepPin, int aDirPin, int aEnablePin, bool aInverse, float main_gear_teeth, float motor_gear_teeth, int microsteps, int steps_per_rev) {
+RampsStepper::RampsStepper(int aStepPin, int aDirPin, int aEnablePin, bool aInverse, float main_gear_teeth, float motor_gear_teeth, int microsteps, int steps_per_rev, char aStepperAxis) {
   setReductionRatio(main_gear_teeth / motor_gear_teeth, microsteps * steps_per_rev);
   stepPin = aStepPin;
   dirPin = aDirPin;
@@ -9,6 +10,7 @@ RampsStepper::RampsStepper(int aStepPin, int aDirPin, int aEnablePin, bool aInve
   inverse = aInverse;
   stepperStepPosition = 0;
   stepperStepTargetPosition;
+  stepperAxis = aStepperAxis;
   pinMode(stepPin, OUTPUT);
   pinMode(dirPin, OUTPUT);
   pinMode(enablePin, OUTPUT);
@@ -62,17 +64,28 @@ void RampsStepper::stepRelativeRad(float rad) {
 }
 
 void RampsStepper::update() {   
+  int sleepTime = 0;
+
+  // Slow down the E axis
+  if(stepperAxis == 'E'){
+    sleepTime = E_STEP_DELAY_MICROSECONDS;
+  }
+  
   while (stepperStepTargetPosition < stepperStepPosition) {  
     digitalWrite(dirPin, !inverse);
     digitalWrite(stepPin, HIGH);
+    delayMicroseconds(sleepTime);
     digitalWrite(stepPin, LOW);
+    delayMicroseconds(sleepTime);
     stepperStepPosition--;
   }
   
   while (stepperStepTargetPosition > stepperStepPosition) {    
     digitalWrite(dirPin, inverse);
     digitalWrite(stepPin, HIGH);
+    delayMicroseconds(sleepTime);
     digitalWrite(stepPin, LOW);
+    delayMicroseconds(sleepTime);
     stepperStepPosition++;
   }
 }

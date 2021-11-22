@@ -3,7 +3,7 @@
 
 class RampsStepper {
 public:
-  RampsStepper(int aStepPin, int aDirPin, int aEnablePin, bool aInverse, float main_gear_teeth, float motor_gear_teeth, int microsteps, int steps_per_rev);
+  RampsStepper(int aStepPin, int aDirPin, int aEnablePin, bool aInverse, float main_gear_teeth, float motor_gear_teeth, int microsteps, int steps_per_rev, char aStepperAxis);
   void enable(bool value = true);
     
   bool isOnPosition() const;
@@ -28,6 +28,7 @@ private:
   int enablePin;  
   bool inverse;
   float radToStepFactor;
+  char stepperAxis;
 };
 
 #endif

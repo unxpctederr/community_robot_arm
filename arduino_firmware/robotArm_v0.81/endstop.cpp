@@ -1,5 +1,6 @@
 #include "endstop.h"
 #include <Arduino.h>
+#include "logger.h"
 
 Endstop::Endstop(int a_min_pin, int a_dir_pin, int a_step_pin, int a_en_pin, int a_switch_input, int a_step_offset, int a_home_dwell, bool does_swap_pin){
   min_pin = a_min_pin;
@@ -10,16 +11,20 @@ Endstop::Endstop(int a_min_pin, int a_dir_pin, int a_step_pin, int a_en_pin, int
   home_dwell = a_home_dwell;
   step_offset = a_step_offset;
   swap_pin = does_swap_pin;
+
   if (swap_pin == false){
     pinMode(min_pin, INPUT_PULLUP);   
   }
+  
 }
 
 void Endstop::home(bool dir) {
-  if (swap_pin == true){
-    pinMode(min_pin, INPUT_PULLUP);
-    delayMicroseconds(5);
+  if (swap_pin == false){
+    pinMode(min_pin, INPUT_PULLUP);   
   }
+
+ 
+  
   digitalWrite(en_pin, LOW);
   delayMicroseconds(5);
   if (dir==1){
@@ -27,9 +32,13 @@ void Endstop::home(bool dir) {
   } else {
     digitalWrite(dir_pin, LOW);
   }
+
   delayMicroseconds(5);
   bState = !(digitalRead(min_pin) ^ switch_input);
   while (!bState) {
+    //Logger::logINFO("INITIAL DIGITAL READ VALUE OF ENDSTOP PIN & Value:");
+  //Logger::logINFO(String(min_pin));
+  //Logger::logINFO(String(digitalRead(min_pin)));
     digitalWrite(step_pin, HIGH);
     digitalWrite(step_pin, LOW);
     delayMicroseconds(home_dwell);
@@ -50,7 +59,13 @@ void Endstop::homeOffset(bool dir){
     digitalWrite(dir_pin, HIGH);
   }
   delayMicroseconds(5);
+
+  
+  //Logger::logINFO("Homing axis to right angle pos");
+  
   for (int i = 1; i <= step_offset; i++) {
+   // Logger::logINFO(String(i));
+    
     digitalWrite(step_pin, HIGH);
     digitalWrite(step_pin, LOW);
     delayMicroseconds(home_dwell);
